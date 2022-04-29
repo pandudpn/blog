@@ -4,36 +4,39 @@ package dbc
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"net/url"
 	"os"
+	
+	_ "github.com/lib/pq"
 )
 
 // NewConnectionSql to connect database
-func NewConnectionSql() *sql.DB {
+func NewConnectionSql() (*sql.DB, error) {
 	// set host database
-	u := url.URL{
+	dsn := url.URL{
 		Host:   fmt.Sprintf("%s:%s", os.Getenv("DB_HOST"), os.Getenv("DB_PORT")),
 		User:   url.UserPassword(os.Getenv("DB_USERNAME"), os.Getenv("DB_PASSWORD")),
 		Path:   os.Getenv("DB_NAME"),
-		Scheme: "postgres",
+		Scheme: os.Getenv("DB_DRIVER"),
 	}
 	// make query for set raw query database
-	dsn := u.Query()
+	query := dsn.Query()
 	// set ssl_mode of database
-	dsn.Set("ssl_mode", os.Getenv("DB_SSL_MODE"))
+	query.Add("sslmode", os.Getenv("DB_SSL_MODE"))
 	// set timezone database
-	dsn.Set("timezone", os.Getenv("DB_TIMEZONE"))
+	query.Add("TimeZone", os.Getenv("DB_TIMEZONE"))
 	
-	conn, err := sql.Open("postgres", dsn.Encode())
+	dsn.RawQuery = query.Encode()
+	
+	conn, err := sql.Open(dsn.Scheme, dsn.String())
 	if err != nil {
-		log.Fatalln("error open connection to database", err)
+		return nil, err
 	}
 	
 	err = conn.Ping()
 	if err != nil {
-		log.Fatalln("ping database error", err)
+		return nil, err
 	}
 	
-	return conn
+	return conn, nil
 }

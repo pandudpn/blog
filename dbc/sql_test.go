@@ -25,6 +25,7 @@ func TestNewConnectionSql_Error1(t *testing.T) {
 func TestNewConnectionSql_Error2(t *testing.T) {
 	t.Run("Test Case #2 Error Ping Database", func(t *testing.T) {
 		os.Setenv("DB_DRIVER", "postgres")
+		os.Setenv("DB_SSL_MODE", "")
 		
 		var expectedResult *sql.DB
 		db, err := dbc.NewConnectionSql()

@@ -11,6 +11,8 @@ import (
 	"github.com/ory/dockertest/v3/docker"
 )
 
+var db *sql.DB
+
 func TestMain(m *testing.M) {
 	// uses a sensible default on windows (tcp/http) and linux/osx (socket)
 	pool, err := dockertest.NewPool("")
@@ -37,7 +39,7 @@ func TestMain(m *testing.M) {
 	// exponential backoff-retry, because the application in the container might not be ready to accept connections yet
 	if err := pool.Retry(func() error {
 		var err error
-		db, err := sql.Open("postgres", fmt.Sprintf("postgres:@(localhost:%s)/postgres", postgres.GetPort("5432/tcp")))
+		db, err = sql.Open("postgres", fmt.Sprintf("postgres:@(localhost:%s)/postgres", postgres.GetPort("5432/tcp")))
 		if err != nil {
 			return err
 		}

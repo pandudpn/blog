@@ -21,7 +21,7 @@ jobs:
           go mod download && go install github.com/mattn/goveralls@latest
 
       - name: Run Unit Tests
-        run: go test -race -covermode atomic -coverprorfile=coverage.out ./...
+        run: go test -race -covermode atomic -coverprofile=coverage.out ./...
 
       - name: send coverage to coveralls
         run: goveralls -coverprofile=coverage.out -service=github

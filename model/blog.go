@@ -15,6 +15,8 @@ type Blog struct {
 	CreatedAt time.Time    `db:"created_at"`
 	UpdatedAt sql.NullTime `db:"updated_at"`
 	DeletedAt sql.NullTime `db:"deleted_at"`
+	// relation
+	User *User `db:"-"`
 }
 
 // IsStatusDraft check status blog is draft
